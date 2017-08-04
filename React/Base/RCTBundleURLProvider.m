@@ -17,6 +17,7 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 const NSUInteger kRCTBundleURLProviderDefaultPort = 8081;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
+static NSString *const kRCTJsPortKey = @"RCT_jsPort";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
@@ -62,9 +63,10 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 static NSURL *serverRootWithHost(NSString *host)
 {
+  NSInteger* port = [RCTBundleURLProvider sharedSettings].jsPort?[[RCTBundleURLProvider sharedSettings].jsPort integerValue]:kRCTBundleURLProviderDefaultPort;
   return [NSURL URLWithString:
           [NSString stringWithFormat:@"http://%@:%lu/",
-           host, (unsigned long)kRCTBundleURLProviderDefaultPort]];
+           host, (unsigned long)port]];
 }
 
 #if RCT_DEV
@@ -148,6 +150,19 @@ static NSURL *serverRootWithHost(NSString *host)
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHost query:nil];
 }
 
+-(NSURL *)jsBundleURLForJSServer:(NSString *)defaultJSServerURL
+{
+  NSString* url;
+  if(self.jsLocation)
+    url = self.jsLocation;
+  else
+    url = defaultJSServerURL;
+  return [[self class] jsBundleURLForBundleRoot:@"index.ios"
+                                   packagerHost:url
+                                      enableDev:[self enableDev]
+                             enableMinification:[self enableMinification]];
+}
+
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
@@ -200,6 +215,11 @@ static NSURL *serverRootWithHost(NSString *host)
   return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTJsLocationKey];
 }
 
+- (NSString *)jsPort
+{
+  return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTJsPortKey];
+}
+
 - (void)setEnableDev:(BOOL)enableDev
 {
   [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
@@ -213,6 +233,11 @@ static NSURL *serverRootWithHost(NSString *host)
 - (void)setJsLocation:(NSString *)jsLocation
 {
   [self updateValue:jsLocation forKey:kRCTJsLocationKey];
+}
+
+- (void)setJsPort:(NSString *)jsPort
+{
+  [self updateValue:jsPort forKey:kRCTJsPortKey];
 }
 
 - (void)setEnableMinification:(BOOL)enableMinification

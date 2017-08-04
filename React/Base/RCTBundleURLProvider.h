@@ -41,6 +41,8 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                     resourceExtension:(NSString *)extension
                         offlineBundle:(NSBundle *)offlineBundle;
 
+- (NSURL *)jsBundleURLForJSServer:(NSString*)defaultJSServerURL;
+
 /**
  * Returns the URL of the packager server.
  */
@@ -50,6 +52,7 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * The IP address or hostname of the packager.
  */
 @property (nonatomic, copy) NSString *jsLocation;
+@property (nonatomic, copy) NSString *jsPort;
 
 @property (nonatomic, assign) BOOL enableLiveReload;
 @property (nonatomic, assign) BOOL enableMinification;

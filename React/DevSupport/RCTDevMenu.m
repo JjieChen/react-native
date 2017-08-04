@@ -13,6 +13,7 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTBundleURLProvider.h"
 
 #if RCT_DEV
 
@@ -245,7 +246,64 @@ RCT_EXPORT_MODULE()
   }]];
 
   [items addObjectsFromArray:_extraMenuItems];
+  [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Dev Settings" handler:^{
+    UIAlertView *alertView = [UIAlertView new];
+    alertView.title = @"JSServerHost";
+    alertView.message = @"填写JSServer的地址，不填端口默认8081，点击确认后会保存并退出应用，重新启动应用后生效";
+    alertView.delegate = self;
+    [alertView addButtonWithTitle:@"取消"];
+    alertView.cancelButtonIndex = 0;
+    [alertView addButtonWithTitle:@"确认"];
+    alertView.alertViewStyle =UIAlertViewStylePlainTextInput;
+    UITextField *tf=[alertView textFieldAtIndex:0];
+    NSString* url = [[RCTBundleURLProvider sharedSettings] jsLocation];
+    NSString* port = [[RCTBundleURLProvider sharedSettings] jsPort];
+    tf.text = url;
+    if(port)
+    {
+      tf.text = [[NSString alloc] initWithFormat:@"%@:%@", url?:@"", port];
+    }
+    [alertView show];
+  }]];
   return items;
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+  if (buttonIndex == 1) {
+    
+    //得到输入框
+    UITextField *tf=[alertView textFieldAtIndex:0];
+    NSString* url, *port;
+    if([tf.text isEqualToString:@""])
+    {
+      url = nil;
+      port = nil;
+    }
+    else{
+      NSArray *stringLs = [tf.text componentsSeparatedByString:@":"];
+      if(stringLs.count>1)
+      {
+        if([stringLs[0] isEqualToString:@""])
+        {
+          url = nil;
+        }
+        else
+        {
+          url = stringLs[0];
+        }
+        port = stringLs[1];
+      }
+      else
+      {
+        url = tf.text;
+        port = nil;
+      }
+    }
+    [[RCTBundleURLProvider sharedSettings]setJsLocation:url];
+    [[RCTBundleURLProvider sharedSettings]setJsPort:port];
+    
+    exit(0);
+  }
 }
 
 RCT_EXPORT_METHOD(show)

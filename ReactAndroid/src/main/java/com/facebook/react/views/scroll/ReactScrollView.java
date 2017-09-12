@@ -156,7 +156,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
     super.onScrollChanged(x, y, oldX, oldY);
 
-    if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+    if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {}
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
@@ -169,7 +169,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         this,
         mOnScrollDispatchHelper.getXFlingVelocity(),
         mOnScrollDispatchHelper.getYFlingVelocity());
-    }
+    //}
   }
 
   @Override

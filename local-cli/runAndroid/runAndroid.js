@@ -193,7 +193,14 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     if (args.installDebug) {
       gradleArgs.push(args.installDebug);
     }
-
+    console.log(chalk.bold(
+      `Building ReactAndroid.`
+    ));
+    
+    child_process.execFileSync(cmd, ['ReactAndroid:InstallArchives'], {
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+    
     console.log(chalk.bold(
       `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));

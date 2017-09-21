@@ -45,7 +45,7 @@ task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
 */
 task prepareBoost(dependsOn: createNativeDepsDirectories, type: Copy) {
-	from boostPath ?: tarTree(resources.gzip(new File('./boost_1_63_0.tar.gz'))
+	from boostPath ?: tarTree(resources.gzip(new File('./boost_1_63_0.tar.gz')))
     from 'src/main/jni/third-party/boost/Android.mk'
     include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
     includeEmptyDirs = false
